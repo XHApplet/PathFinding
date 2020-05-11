@@ -3,7 +3,7 @@
 @Description: 地图界面
 @Author: lamborghini1993
 @Date: 2020-05-11 16:47:30
-@UpdateDate: 2020-05-11 20:13:59
+@UpdateDate: 2020-05-11 21:25:41
 '''
 from enum import Enum
 from PyQt5 import QtWidgets, QtGui, QtCore
@@ -24,6 +24,7 @@ class Label(QtWidgets.QLabel):
         self._pos = pos
         self._flag = flag
         # self.setText("A")
+        # self.setMouseTracking(True)
         self.setAcceptDrops(True)
         self.setMinimumSize(QtCore.QSize(20, 20))
         self.setMaximumSize(QtCore.QSize(20, 20))
@@ -37,6 +38,12 @@ class Label(QtWidgets.QLabel):
         if self._flag not in Map:
             return
         self._flag = _flag
+        self.parent().update_last_label(self)
+        self.update()
+
+    @property
+    def pos(self):
+        return self._pos
 
     def paintEvent(self, e):
         super().paintEvent(e)
@@ -48,54 +55,73 @@ class Label(QtWidgets.QLabel):
 
     def dragEnterEvent(self, e):
         super().dragEnterEvent(e)
-        print("enter:", self._pos)
+        e.accept()
+        e.acceptProposedAction()
+        _flag = getattr(e.mimeData(), "__flag", None)
+        if not _flag:
+            return
+
+        print("enter:", self._pos, _flag, end=" | ")
+
+        if _flag in (Map.START, Map.GOAL):
+            if self.flag == Map.BLANK:
+                print("1", self.flag, _flag)
+                self.flag = _flag
+            return
+
+        if _flag in (Map.BLANK, Map.WALL):
+            if self.flag != _flag:
+                print("2", self.flag, _flag)
+                self.flag = _flag
+            return
 
     def dragLeaveEvent(self, e):
         super().dragLeaveEvent(e)
-        print("leave:", self._pos)
+        e.accept()
+        # _flag = getattr(e.mimeData(), "__flag", None)
+        # if not _flag:
+        #     return
+        self.parent().last_label = self
+        # print("enter:", self._pos, _flag)
 
-    def enterEvent(self, e):
-        super().enterEvent(e)
-        print("enter", self.parent().flag)
-        if not self.parent().flag:
-            return
+    def eventFilter(self, e):
+        super().eventFilter(e)
+        print("eventFilter:", self._pos)
 
-        if self.parent().flag in (Map.START, Map.GOAL):
-            if self.flag == Map.BLANK:
-                self.flag = self.parent().flag
-            return
+    # def enterEvent(self, e):
+    #     super().enterEvent(e)
+    #     if not self.parent().flag:
+    #         return
+    #     print("enter", self.parent().flag)
 
-        if self.parent().flag in (Map.BLANK, Map.WALL):
-            if self.flag != self.parent().flag:
-                self.flag = self.parent().flag
-            return
+    #     if self.parent().flag in (Map.START, Map.GOAL):
+    #         if self.flag == Map.BLANK:
+    #             self.flag = self.parent().flag
+    #         return
 
-    def leaveEvent(self, e):
-        super().leaveEvent(e)
-        # print("leaveEvent:", self._pos)
+    #     if self.parent().flag in (Map.BLANK, Map.WALL):
+    #         if self.flag != self.parent().flag:
+    #             self.flag = self.parent().flag
+    #         return
 
-    def mousePressEvent(self, e):
-        super().mousePressEvent(e)
-        self.parent().flag = self._flag
-        print("mousePressEvent...", self._pos, self._flag)
+    # def leaveEvent(self, e):
+    #     super().leaveEvent(e)
+    #     # print("leaveEvent:", self._pos)
 
-    def mouseMoveEvent(self, e):
-        super().mouseMoveEvent(e)
-        # print("mouseMoveEvent...", self._pos)
+    # def mousePressEvent(self, e):
+    #     super().mousePressEvent(e)
+    #     self.parent().flag = self._flag
+    #     print("mousePressEvent...", self._pos, self._flag)
+    #     e.accept()
 
-    def mouseReleaseEvent(self, e):
-        super().mouseReleaseEvent(e)
-        self.parent().flag = None
-        print("mouseReleaseEvent...", self._pos, self._flag)
+    # def mouseMoveEvent(self, e):
+    #     super().mouseMoveEvent(e)
+    #     # print("mouseMoveEvent...", self._pos)
 
-    def _change_flag(self, _flag):
-        if self.parent().flag == Map.START:
-
-            return
-
-        if _flag == Map.BLANK:
-            return
-        self._flag = _flag
+    # def mouseReleaseEvent(self, e):
+    #     super().mouseReleaseEvent(e)
+    #     self.parent().flag = None
+    #     print("mouseReleaseEvent...", self._pos, self._flag)
 
 
 class CMapFrame(QtWidgets.QFrame):
@@ -111,12 +137,14 @@ class CMapFrame(QtWidgets.QFrame):
         self._gridLayout = QtWidgets.QGridLayout(self)
         self._gridLayout.setContentsMargins(0, 0, 0, 0)
         self._gridLayout.setSpacing(1)
+        self.setAcceptDrops(True)
 
     def resize_map(self, h: int, w: int):
         self._h = h
         self._w = w
         self._start = (20, 15)
         self._gold = (30, 15)
+        self._last_label = None
         self._generate_map()
 
     def _remove(self):
@@ -143,3 +171,38 @@ class CMapFrame(QtWidgets.QFrame):
     @flag.setter
     def flag(self, _flag: Map):
         self._flag = _flag
+
+    @property
+    def last_label(self):
+        return self._last_label
+
+    @last_label.setter
+    def last_label(self, label: Label):
+        self._last_label = label
+
+    def update_last_label(self, label: Label):
+        if not self.flag:
+            return
+        if self._last_label.flag == Map.START and self._flag == Map.START:
+            self._last_label.flag = Map.BLANK
+            self._last_label.update()
+
+    def mousePressEvent(self, e):
+        super().mousePressEvent(e)
+        item = self.childAt(e.pos())
+        if not isinstance(item, Label):
+            return
+        drag = QtGui.QDrag(self)
+        mine_data = QtCore.QMimeData()
+        setattr(mine_data, "__flag", item._flag)
+        drag.setMimeData(mine_data)
+        self.flag = item._flag
+        result = drag.exec(QtCore.Qt.MoveAction)
+
+    def mouseReleaseEvent(self, e):
+        super().mousePressEvent(e)
+        self.flag = None
+
+    def dragEnterEvent(self, e):
+        super().dragEnterEvent(e)
+        e.accept()
