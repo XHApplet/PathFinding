@@ -3,7 +3,7 @@
 @Description: 主界面
 @Author: lamborghini1993
 @Date: 2020-05-11 16:26:05
-@UpdateDate: 2020-05-12 20:19:01
+@UpdateDate: 2020-05-12 21:06:01
 '''
 
 from PyQt5 import QtWidgets
@@ -64,7 +64,9 @@ class CMainWindow(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         if btn == self.manhattan:
             self._type = astar.MANHATTAN
         elif btn == self.diagonal:
-            self._type = astar.DIAGONAL
+            self._type = astar.DIAGONAL_STEP
+        elif btn == self.diagonal_dis:
+            self._type = astar.DIAGONAL_DIS
 
     def __start(self):
         self.frame.clear()

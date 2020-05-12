@@ -98,8 +98,10 @@
             </property>
             <property name="plainText">
              <string>地图信息：
-  可以创建地图大小
-  范围：2-100</string>
+  绿色：起始点
+  红色：终点
+  可鼠标拖动起始点和终点
+  点击空白/墙壁拖动可填充</string>
             </property>
            </widget>
           </item>
@@ -209,7 +211,7 @@
           <item>
            <widget class="QRadioButton" name="manhattan">
             <property name="text">
-             <string>manhattan(曼哈顿上下左右)</string>
+             <string>manhattan(曼哈顿走法)</string>
             </property>
             <property name="checked">
              <bool>true</bool>
@@ -222,7 +224,17 @@
           <item>
            <widget class="QRadioButton" name="diagonal">
             <property name="text">
-             <string>diagonal(可走对角线)</string>
+             <string>diag-step(可走对角线-按步数)</string>
+            </property>
+            <attribute name="buttonGroup">
+             <string notr="true">buttonGroup</string>
+            </attribute>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="diagonal_dis">
+            <property name="text">
+             <string>diag-dis(可走对角线-按距离)</string>
             </property>
             <attribute name="buttonGroup">
              <string notr="true">buttonGroup</string>
@@ -250,21 +262,21 @@
             </property>
            </widget>
           </item>
-          <item>
-           <spacer name="verticalSpacer">
-            <property name="orientation">
-             <enum>Qt::Vertical</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>20</width>
-              <height>40</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
          </layout>
         </widget>
+       </item>
+       <item>
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
        </item>
       </layout>
      </widget>
