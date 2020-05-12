@@ -125,7 +125,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "A*自动寻路"))
         self.groupBox_3.setTitle(_translate("MainWindow", "操作说明"))
         self.plainTextEdit.setPlainText(_translate("MainWindow", "地图信息：\n"
 "  可以创建地图大小\n"

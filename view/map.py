@@ -3,7 +3,7 @@
 @Description: 地图界面
 @Author: lamborghini1993
 @Date: 2020-05-11 16:47:30
-@UpdateDate: 2020-05-12 17:49:25
+@UpdateDate: 2020-05-12 20:23:26
 '''
 from enum import Enum
 
@@ -54,6 +54,13 @@ class Label(QtWidgets.QLabel):
     @property
     def pos(self):
         return self._pos
+
+    def clear(self, containe_wall: bool = False):
+        self._line = []
+        if self._flag not in (Map.START, Map.GOAL):
+            if containe_wall or self._flag != Map.WALL:
+                self._flag = Map.BLANK
+        self.update()
 
     def paintEvent(self, e):
         super().paintEvent(e)
@@ -208,6 +215,8 @@ class CMapFrame(QtWidgets.QFrame):
 
     def _astar_call(self, _type, pos):
         if _type == astar.RESULT:
+            if not pos:
+                return
             for i in range(len(pos)-1):
                 pos0 = pos[i]
                 pos1 = pos[i+1]
@@ -220,6 +229,12 @@ class CMapFrame(QtWidgets.QFrame):
                 label.flag = Map.WILL_VISIT
             elif _type == astar.HAS_VISIT:
                 label.flag = Map.HAS_VISIT
+
+    def clear(self, containe_wall: bool = False):
+        for label in self._widget.values():
+            if label.flag == Map.BLANK:
+                continue
+            label.clear(containe_wall)
 
 
 def _minu(pos0, pos1):
