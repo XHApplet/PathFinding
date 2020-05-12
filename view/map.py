@@ -3,7 +3,7 @@
 @Description: 地图界面
 @Author: lamborghini1993
 @Date: 2020-05-11 16:47:30
-@UpdateDate: 2020-05-11 21:25:41
+@UpdateDate: 2020-05-12 15:26:27
 '''
 from enum import Enum
 from PyQt5 import QtWidgets, QtGui, QtCore
@@ -23,8 +23,6 @@ class Label(QtWidgets.QLabel):
         super().__init__(parent)
         self._pos = pos
         self._flag = flag
-        # self.setText("A")
-        # self.setMouseTracking(True)
         self.setAcceptDrops(True)
         self.setMinimumSize(QtCore.QSize(20, 20))
         self.setMaximumSize(QtCore.QSize(20, 20))
@@ -38,8 +36,11 @@ class Label(QtWidgets.QLabel):
         if self._flag not in Map:
             return
         self._flag = _flag
-        self.parent().update_last_label(self)
         self.update()
+
+    def _update_flag(self, _flag: Map):
+        self.flag = _flag
+        self.parent().update_last_label(self)
 
     @property
     def pos(self):
@@ -61,67 +62,33 @@ class Label(QtWidgets.QLabel):
         if not _flag:
             return
 
-        print("enter:", self._pos, _flag, end=" | ")
-
         if _flag in (Map.START, Map.GOAL):
             if self.flag == Map.BLANK:
-                print("1", self.flag, _flag)
-                self.flag = _flag
+                self._update_flag(_flag)
             return
 
-        if _flag in (Map.BLANK, Map.WALL):
-            if self.flag != _flag:
-                print("2", self.flag, _flag)
-                self.flag = _flag
+        if _flag == Map.BLANK and self._flag == Map.BLANK:
+            self._update_flag(Map.WALL)
+            return
+
+        if _flag == Map.WALL and self._flag == Map.WALL:
+            self._update_flag(Map.BLANK)
             return
 
     def dragLeaveEvent(self, e):
         super().dragLeaveEvent(e)
         e.accept()
-        # _flag = getattr(e.mimeData(), "__flag", None)
-        # if not _flag:
-        #     return
-        self.parent().last_label = self
-        # print("enter:", self._pos, _flag)
+        if self.parent().flag in (Map.START, Map.GOAL) and self._flag == self.parent().flag:
+            self.parent().last_label = self
+            return
 
-    def eventFilter(self, e):
-        super().eventFilter(e)
-        print("eventFilter:", self._pos)
+        if self.parent().flag == Map.BLANK and self._flag == Map.BLANK:
+            self.parent().last_label = self
+            return
 
-    # def enterEvent(self, e):
-    #     super().enterEvent(e)
-    #     if not self.parent().flag:
-    #         return
-    #     print("enter", self.parent().flag)
-
-    #     if self.parent().flag in (Map.START, Map.GOAL):
-    #         if self.flag == Map.BLANK:
-    #             self.flag = self.parent().flag
-    #         return
-
-    #     if self.parent().flag in (Map.BLANK, Map.WALL):
-    #         if self.flag != self.parent().flag:
-    #             self.flag = self.parent().flag
-    #         return
-
-    # def leaveEvent(self, e):
-    #     super().leaveEvent(e)
-    #     # print("leaveEvent:", self._pos)
-
-    # def mousePressEvent(self, e):
-    #     super().mousePressEvent(e)
-    #     self.parent().flag = self._flag
-    #     print("mousePressEvent...", self._pos, self._flag)
-    #     e.accept()
-
-    # def mouseMoveEvent(self, e):
-    #     super().mouseMoveEvent(e)
-    #     # print("mouseMoveEvent...", self._pos)
-
-    # def mouseReleaseEvent(self, e):
-    #     super().mouseReleaseEvent(e)
-    #     self.parent().flag = None
-    #     print("mouseReleaseEvent...", self._pos, self._flag)
+        if self.parent().flag == Map.WALL and self._flag == Map.WALL:
+            self.parent().last_label = self
+            return
 
 
 class CMapFrame(QtWidgets.QFrame):
@@ -181,11 +148,10 @@ class CMapFrame(QtWidgets.QFrame):
         self._last_label = label
 
     def update_last_label(self, label: Label):
-        if not self.flag:
+        if not (self.flag and self._last_label):
             return
-        if self._last_label.flag == Map.START and self._flag == Map.START:
+        if self._flag in (Map.START, Map.GOAL):
             self._last_label.flag = Map.BLANK
-            self._last_label.update()
 
     def mousePressEvent(self, e):
         super().mousePressEvent(e)
