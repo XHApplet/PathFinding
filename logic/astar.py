@@ -3,11 +3,12 @@
 @Description: A*搜索
 @Author: lamborghini1993
 @Date: 2020-05-09 14:15:24
-@UpdateDate: 2020-05-12 20:56:47
+@UpdateDate: 2020-05-15 20:36:37
 '''
 
+# Standard Library
+import asyncio
 import math
-
 from functools import total_ordering
 from queue import PriorityQueue as PQuese
 from typing import Any, Callable, List, Tuple
@@ -57,7 +58,7 @@ class Node:
 
 
 def _add(pos1, pos2):
-    return (pos1[0]+pos2[0], pos1[1]+pos2[1])
+    return (pos1[0] + pos2[0], pos1[1] + pos2[1])
 
 
 class AStar:
@@ -103,7 +104,13 @@ class AStar:
                 self._land[pos] = False
         self._result = []
         self._total_cost = 0
-        self._start_astar()
+
+        loop = asyncio.get_event_loop()
+        # print(loop, loop.is_running())
+        # print(loop, id(loop))
+        # asyncio.ensure_future(self._start_astar(), loop=loop)
+        # loop.run_until_complete(self._start_astar())
+        loop.create_task(self._start_astar())
 
     def _legitimate(self, pos: Tuple[int, int]) -> bool:
         if pos[0] >= self._w or pos[0] < 0:
@@ -116,14 +123,14 @@ class AStar:
         x0, y0 = pos
         x1, y1 = self._goal
         if self._type == DIAGONAL_STEP:
-            return max(abs(x0-x1), abs(y0-y1))
+            return max(abs(x0 - x1), abs(y0 - y1))
         if self._type == DIAGONAL_DIS:
-            x = abs(x0-x1)
-            y = abs(y0-y1)
+            x = abs(x0 - x1)
+            y = abs(y0 - y1)
             if x > y:
                 x, y = y, x
             return x * math.sqrt(2) + y - x
-        return abs(x0-x1) + abs(y0-y1)
+        return abs(x0 - x1) + abs(y0 - y1)
 
     def _meet_my_judge(self, _pos):
         if not self._legitimate(_pos):
@@ -153,7 +160,7 @@ class AStar:
             if self._land.get(con1, True) or self._land.get(con2, True):
                 yield _next, self._one_diag_cost
 
-    def _start_astar(self):
+    async def _start_astar(self):
         self._pq.put(Node(self._start, 0))
         self._visit[self._start] = True
         while not self._pq.empty():
@@ -162,11 +169,13 @@ class AStar:
                 self._count_result(head)
                 return
             self._call_path(HAS_VISIT, head.pos)
+            await asyncio.sleep(1)
             for _next, _one_cost in self._next_pos(head.pos):
                 self._visit[_next] = True
                 cost = head.step + _one_cost + self._get_cos(_next)
                 self._pq.put(Node(_next, cost, head.step + _one_cost, head))
                 self._call_path(WILL_VISIT, _next)
+                await asyncio.sleep(1)
 
         self._call_path(RESULT, None)
 
