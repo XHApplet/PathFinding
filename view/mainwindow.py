@@ -3,7 +3,7 @@
 @Description: 主界面
 @Author: lamborghini1993
 @Date: 2020-05-11 16:26:05
-@UpdateDate: 2020-05-14 21:06:15
+@UpdateDate: 2020-05-15 20:57:20
 '''
 
 # Standard Library
@@ -50,20 +50,16 @@ class CMainWindow(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             self.clear_wall.setEnabled(True)
 
     def _init_ui(self):
-        self.mapBox.hide()
         self.frame.resize_map(50, 30)
+        self.step_int.setRange(0, 1)
+        self.step_int.setDecimals(1)
 
     def _init_signal(self):
-        self.create_map.clicked.connect(self.__create_map)
         self.buttonGroup.buttonClicked.connect(self.__type_change)
         self.start.clicked.connect(self.__start)
         self.clear_path.clicked.connect(self.__clear_path)
         self.clear_wall.clicked.connect(self.__clear_wall)
 
-    def __create_map(self):
-        h = int(self.spinBoxH.text())
-        w = int(self.spinBoxW.text())
-        self.frame.resize_map(w, h)
 
     def __type_change(self, btn):
         if btn == self.manhattan:
@@ -76,7 +72,7 @@ class CMainWindow(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
     def __start(self):
         self.frame.clear()
         self.status = Status.RUNNING
-        self._astar = astar.AStar(*self.frame.get_map_info(), self._type, self._astar_call)
+        self._astar = astar.AStar(*self.frame.get_map_info(), self._type, self._astar_call, self.step_int.value())
 
     def __clear_path(self):
         self.frame.clear()

@@ -109,85 +109,6 @@
         </widget>
        </item>
        <item>
-        <widget class="QGroupBox" name="mapBox">
-         <property name="title">
-          <string>地图信息</string>
-         </property>
-         <layout class="QVBoxLayout" name="verticalLayout_2">
-          <property name="spacing">
-           <number>2</number>
-          </property>
-          <property name="leftMargin">
-           <number>0</number>
-          </property>
-          <property name="topMargin">
-           <number>0</number>
-          </property>
-          <property name="rightMargin">
-           <number>0</number>
-          </property>
-          <property name="bottomMargin">
-           <number>0</number>
-          </property>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_2">
-            <property name="spacing">
-             <number>0</number>
-            </property>
-            <item>
-             <widget class="QLabel" name="label">
-              <property name="text">
-               <string>长</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QSpinBox" name="spinBoxW">
-              <property name="minimum">
-               <number>2</number>
-              </property>
-              <property name="maximum">
-               <number>100</number>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_3">
-            <property name="spacing">
-             <number>0</number>
-            </property>
-            <item>
-             <widget class="QLabel" name="label_2">
-              <property name="text">
-               <string>宽</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QSpinBox" name="spinBoxH">
-              <property name="minimum">
-               <number>2</number>
-              </property>
-              <property name="maximum">
-               <number>100</number>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <widget class="QPushButton" name="create_map">
-            <property name="text">
-             <string>创建</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item>
         <widget class="QGroupBox" name="groupBox_2">
          <property name="title">
           <string>配置</string>
@@ -240,6 +161,26 @@
              <string notr="true">buttonGroup</string>
             </attribute>
            </widget>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_2">
+            <property name="topMargin">
+             <number>10</number>
+            </property>
+            <property name="bottomMargin">
+             <number>10</number>
+            </property>
+            <item>
+             <widget class="QLabel" name="label">
+              <property name="text">
+               <string>步数间隔时间：</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="UE4Slider" name="step_int" native="true"/>
+            </item>
+           </layout>
           </item>
           <item>
            <widget class="QPushButton" name="start">
@@ -305,6 +246,12 @@
    <class>CMapFrame</class>
    <extends>QFrame</extends>
    <header location="global">view.map</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>UE4Slider</class>
+   <extends>QWidget</extends>
+   <header location="global">xhpubqt.ue4slider</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

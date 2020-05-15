@@ -3,7 +3,7 @@
 @Description: A*搜索
 @Author: lamborghini1993
 @Date: 2020-05-09 14:15:24
-@UpdateDate: 2020-05-15 20:36:37
+@UpdateDate: 2020-05-15 20:55:30
 '''
 
 # Standard Library
@@ -63,7 +63,7 @@ def _add(pos1, pos2):
 
 class AStar:
     def __init__(self, w: int, h: int, start: Tuple[int, int], goal: Tuple[int, int], walls: List[Tuple[int, int]],
-                 _type: int = MANHATTAN, _call: Callable = None):
+                 _type: int = MANHATTAN, _call: Callable = None, _sleep: float = 0):
         """A*参数
 
         Args:
@@ -91,6 +91,7 @@ class AStar:
         self._w = w
         self._h = h
         self._call = _call
+        self._sleep = _sleep
         if not (self._legitimate(start) and self._legitimate(goal)):
             raise Exception("Illegal coordinates")
         self._type = _type
@@ -105,12 +106,7 @@ class AStar:
         self._result = []
         self._total_cost = 0
 
-        loop = asyncio.get_event_loop()
-        # print(loop, loop.is_running())
-        # print(loop, id(loop))
-        # asyncio.ensure_future(self._start_astar(), loop=loop)
-        # loop.run_until_complete(self._start_astar())
-        loop.create_task(self._start_astar())
+        asyncio.create_task(self._start_astar())
 
     def _legitimate(self, pos: Tuple[int, int]) -> bool:
         if pos[0] >= self._w or pos[0] < 0:
@@ -169,13 +165,14 @@ class AStar:
                 self._count_result(head)
                 return
             self._call_path(HAS_VISIT, head.pos)
-            await asyncio.sleep(1)
+            if head.pos != self._start:
+                await asyncio.sleep(self._sleep)
             for _next, _one_cost in self._next_pos(head.pos):
                 self._visit[_next] = True
                 cost = head.step + _one_cost + self._get_cos(_next)
                 self._pq.put(Node(_next, cost, head.step + _one_cost, head))
                 self._call_path(WILL_VISIT, _next)
-                await asyncio.sleep(1)
+                await asyncio.sleep(self._sleep)
 
         self._call_path(RESULT, None)
 

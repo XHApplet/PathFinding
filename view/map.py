@@ -3,7 +3,7 @@
 @Description: 地图界面
 @Author: lamborghini1993
 @Date: 2020-05-11 16:47:30
-@UpdateDate: 2020-05-12 20:23:26
+@UpdateDate: 2020-05-15 21:00:40
 '''
 from enum import Enum
 
@@ -13,12 +13,13 @@ from logic import astar
 
 
 class Map(Enum):
-    START = (0, 221, 0)
+    # START = (0, 221, 0)
+    START = (164, 63, 204)
     BLANK = (255, 255, 255)
     WALL = (128, 128, 128)
     GOAL = (238, 68, 0)
-    HAS_VISIT = (175, 238, 238)
-    # HAS_VISIT = (0, 122, 245)
+    # HAS_VISIT = (175, 238, 238)
+    HAS_VISIT = (0, 122, 245)
     WILL_VISIT = (152, 251, 152)
 
 
