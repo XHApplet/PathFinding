@@ -3,7 +3,7 @@
 @Description: 主界面
 @Author: lamborghini1993
 @Date: 2020-05-11 16:26:05
-@UpdateDate: 2020-05-15 20:57:20
+@UpdateDate: 2020-05-15 21:14:13
 '''
 
 # Standard Library
@@ -36,18 +36,13 @@ class CMainWindow(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self._status = value
         if self._status == Status.PENDING:
             self.start.setText("开始")
+            self.clear_wall.setEnabled(True)
+            self.clear_path.setEnabled(True)
+        elif self._status == Status.RUNNING:
+            self.start.setText("取消")
             self.clear_path.setEnabled(False)
             self.clear_wall.setEnabled(False)
-        elif self._status == Status.RUNNING:
-            self.start.setText("运行中")
-            self.start.setEnabled(False)
-            self.clear_path.setEnabled(True)
-            self.clear_wall.setEnabled(True)
-        elif self._status == Status.END:
-            self.start.setText("重新运行")
-            self.start.setEnabled(True)
-            self.clear_path.setEnabled(True)
-            self.clear_wall.setEnabled(True)
+
 
     def _init_ui(self):
         self.frame.resize_map(50, 30)
@@ -71,8 +66,12 @@ class CMainWindow(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
 
     def __start(self):
         self.frame.clear()
-        self.status = Status.RUNNING
-        self._astar = astar.AStar(*self.frame.get_map_info(), self._type, self._astar_call, self.step_int.value())
+        if self.status == Status.PENDING:
+            self.status = Status.RUNNING
+            self._astar = astar.AStar(*self.frame.get_map_info(), self._type, self._astar_call, self.step_int.value())
+        else:
+            self.status = Status.PENDING
+            self._astar.stop()
 
     def __clear_path(self):
         self.frame.clear()
@@ -83,4 +82,4 @@ class CMainWindow(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
     def _astar_call(self, _type, pos):
         self.frame._astar_call(_type, pos)
         if _type == astar.RESULT:
-            self.status = Status.END
+            self.status = Status.PENDING

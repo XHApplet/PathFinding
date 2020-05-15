@@ -3,7 +3,7 @@
 @Description: A*搜索
 @Author: lamborghini1993
 @Date: 2020-05-09 14:15:24
-@UpdateDate: 2020-05-15 20:55:30
+@UpdateDate: 2020-05-15 21:15:18
 '''
 
 # Standard Library
@@ -105,8 +105,10 @@ class AStar:
                 self._land[pos] = False
         self._result = []
         self._total_cost = 0
+        self._task = asyncio.create_task(self._start_astar())
 
-        asyncio.create_task(self._start_astar())
+    def stop(self):
+        self._task.cancel()
 
     def _legitimate(self, pos: Tuple[int, int]) -> bool:
         if pos[0] >= self._w or pos[0] < 0:
