@@ -3,7 +3,7 @@
 @Description: 主界面
 @Author: lamborghini1993
 @Date: 2020-05-11 16:26:05
-@UpdateDate: 2020-05-16 13:42:18
+@UpdateDate: 2020-05-16 15:25:03
 '''
 
 # Standard Library
@@ -59,6 +59,7 @@ class CMainWindow(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
 
     def _init_signal(self):
         self.buttonGroup.buttonClicked.connect(self.__type_change)
+        self.step_int.valueChanged.connect(self.__step_change)
         self.start.clicked.connect(self.__start)
         self.clear.clicked.connect(self.__clear)
         self.debug.clicked.connect(self.__debug)
@@ -71,6 +72,10 @@ class CMainWindow(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
             self._type = astar.DIAGONAL_STEP
         elif btn == self.diagonal_dis:
             self._type = astar.DIAGONAL_DIS
+
+    def __step_change(self, value: int):
+        if self._astar:
+            self._astar.step(value)
 
     def __start(self):
         self.frame.clear()

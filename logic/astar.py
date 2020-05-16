@@ -3,7 +3,7 @@
 @Description: A*搜索
 @Author: lamborghini1993
 @Date: 2020-05-09 14:15:24
-@UpdateDate: 2020-05-16 13:41:39
+@UpdateDate: 2020-05-16 15:24:31
 '''
 
 # Standard Library
@@ -114,6 +114,9 @@ class AStar:
 
     def next(self):
         self._next = True
+
+    def step(self, _step: int):
+        self._sleep = _step
 
     def _legitimate(self, pos: Tuple[int, int]) -> bool:
         if pos[0] >= self._w or pos[0] < 0:
