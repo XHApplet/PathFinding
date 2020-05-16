@@ -44,9 +44,12 @@
      <widget class="QFrame" name="frame_2">
       <property name="maximumSize">
        <size>
-        <width>200</width>
+        <width>220</width>
         <height>16777215</height>
        </size>
+      </property>
+      <property name="styleSheet">
+       <string notr="true"/>
       </property>
       <property name="frameShape">
        <enum>QFrame::StyledPanel</enum>
@@ -98,10 +101,15 @@
             </property>
             <property name="plainText">
              <string>地图信息：
-  绿色：起始点
-  红色：终点
+  紫色：起始点    红色：终点
+  绿色：队列坐标  蓝色：已走坐标
+地图操作：
   可鼠标拖动起始点和终点
-  点击空白/墙壁拖动可填充</string>
+  点击空白/墙壁拖动可填充
+配置说明：
+  可选三种走法
+  可设置A*算法每次步数的间隔时间
+  debug可做一步一步调试</string>
             </property>
            </widget>
           </item>
@@ -115,7 +123,7 @@
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_3">
           <property name="spacing">
-           <number>2</number>
+           <number>4</number>
           </property>
           <property name="leftMargin">
            <number>0</number>
@@ -164,11 +172,14 @@
           </item>
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_2">
+            <property name="spacing">
+             <number>0</number>
+            </property>
             <property name="topMargin">
-             <number>10</number>
+             <number>0</number>
             </property>
             <property name="bottomMargin">
-             <number>10</number>
+             <number>0</number>
             </property>
             <item>
              <widget class="QLabel" name="label">
@@ -178,46 +189,75 @@
              </widget>
             </item>
             <item>
-             <widget class="UE4Slider" name="step_int" native="true"/>
+             <widget class="UE4Slider" name="step_int" native="true">
+              <property name="styleSheet">
+               <string notr="true">color: rgb(255, 255, 255);</string>
+              </property>
+             </widget>
             </item>
            </layout>
           </item>
           <item>
-           <widget class="QPushButton" name="start">
+           <layout class="QHBoxLayout" name="horizontalLayout_3">
+            <property name="spacing">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+            <item>
+             <widget class="QPushButton" name="start">
+              <property name="text">
+               <string>开始</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="debug">
+              <property name="enabled">
+               <bool>true</bool>
+              </property>
+              <property name="styleSheet">
+               <string notr="true"/>
+              </property>
+              <property name="text">
+               <string>调试</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <widget class="QPushButton" name="clear">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="styleSheet">
+             <string notr="true"/>
+            </property>
             <property name="text">
-             <string>开始</string>
+             <string>清除</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="clear_path">
-            <property name="text">
-             <string>清除路径</string>
+           <spacer name="verticalSpacer">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
             </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="clear_wall">
-            <property name="text">
-             <string>清除墙壁</string>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
             </property>
-           </widget>
+           </spacer>
           </item>
          </layout>
         </widget>
-       </item>
-       <item>
-        <spacer name="verticalSpacer">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
        </item>
       </layout>
      </widget>

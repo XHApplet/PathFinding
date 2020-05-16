@@ -3,12 +3,15 @@
 @Description: 地图界面
 @Author: lamborghini1993
 @Date: 2020-05-11 16:47:30
-@UpdateDate: 2020-05-15 21:00:40
+@UpdateDate: 2020-05-16 13:06:25
 '''
+# Standard Library
 from enum import Enum
 
+# PyQt5
 from PyQt5 import QtCore, QtGui, QtWidgets
 
+# Custom Library
 from logic import astar
 
 
@@ -50,7 +53,7 @@ class Label(QtWidgets.QLabel):
 
     def _update_flag(self, _flag: Map):
         self.flag = _flag
-        self.parent().update_last_label(self)
+        self.parent().update_last_label()
 
     @property
     def pos(self):
@@ -75,9 +78,9 @@ class Label(QtWidgets.QLabel):
         pen = QtGui.QPen(QtGui.QColor(255, 200, 50))
         pen.setWidth(2)
         p.setPen(pen)
-        x1, y1 = self.width()/2, self.height()/2
+        x1, y1 = self.width() / 2, self.height() / 2
         for (bx, by) in self._line:
-            x2, y2 = x1+bx*x1, y1+by*y1
+            x2, y2 = x1 + bx * x1, y1 + by * y1
             p.drawLine(x1, y1, x2, y2)
 
     def dragEnterEvent(self, e):
@@ -126,6 +129,8 @@ class CMapFrame(QtWidgets.QFrame):
         self._w = 0
         self._flag = None
         self._widget = {}
+        self._start = (20, 15)
+        self._gold = (30, 15)
 
     def _init(self):
         self._gridLayout = QtWidgets.QGridLayout(self)
@@ -136,8 +141,6 @@ class CMapFrame(QtWidgets.QFrame):
     def resize_map(self, w: int, h: int):
         self._h = h
         self._w = w
-        self._start = (20, 15)
-        self._gold = (30, 15)
         self._last_label = None
         self._generate_map()
 
@@ -155,7 +158,7 @@ class CMapFrame(QtWidgets.QFrame):
                 walls.append(label.pos)
         return self._w, self._h, self._start, self._gold, walls
 
-    def update_last_label(self, label: Label):
+    def update_last_label(self):
         if not (self.flag and self._last_label):
             return
         if self._flag in (Map.START, Map.GOAL):
@@ -201,10 +204,10 @@ class CMapFrame(QtWidgets.QFrame):
             return
         drag = QtGui.QDrag(self)
         mine_data = QtCore.QMimeData()
-        setattr(mine_data, "__flag", item._flag)
+        setattr(mine_data, "__flag", item.flag)
         drag.setMimeData(mine_data)
-        self.flag = item._flag
-        result = drag.exec(QtCore.Qt.MoveAction)
+        self.flag = item.flag
+        drag.exec(QtCore.Qt.MoveAction)
 
     def mouseReleaseEvent(self, e):
         super().mousePressEvent(e)
@@ -214,13 +217,13 @@ class CMapFrame(QtWidgets.QFrame):
         super().dragEnterEvent(e)
         e.accept()
 
-    def _astar_call(self, _type, pos):
+    def astar_call(self, _type, pos):
         if _type == astar.RESULT:
             if not pos:
                 return
-            for i in range(len(pos)-1):
+            for i in range(len(pos) - 1):
                 pos0 = pos[i]
-                pos1 = pos[i+1]
+                pos1 = pos[i + 1]
                 self._widget[pos0].add_line(_minu(pos0, pos1))
                 self._widget[pos1].add_line(_minu(pos1, pos0))
             return
@@ -239,4 +242,4 @@ class CMapFrame(QtWidgets.QFrame):
 
 
 def _minu(pos0, pos1):
-    return (pos1[0]-pos0[0], pos1[1]-pos0[1])
+    return (pos1[0] - pos0[0], pos1[1] - pos0[1])

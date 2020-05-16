@@ -3,7 +3,7 @@
 @Description: 主函数
 @Author: lamborghini1993
 @Date: 2020-05-11 15:47:48
-@UpdateDate: 2020-05-15 20:34:55
+@UpdateDate: 2020-05-16 13:23:44
 '''
 
 import asyncio
@@ -41,7 +41,6 @@ def _mainwindow():
         obj.setPalette(palette)
         obj.show()
         loop.run_forever()
-    sys.exit(app.exec_())
 
 
 if __name__ == "__main__":

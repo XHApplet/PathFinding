@@ -3,7 +3,7 @@
 @Description: A*搜索
 @Author: lamborghini1993
 @Date: 2020-05-09 14:15:24
-@UpdateDate: 2020-05-15 21:15:18
+@UpdateDate: 2020-05-16 13:41:39
 '''
 
 # Standard Library
@@ -63,7 +63,7 @@ def _add(pos1, pos2):
 
 class AStar:
     def __init__(self, w: int, h: int, start: Tuple[int, int], goal: Tuple[int, int], walls: List[Tuple[int, int]],
-                 _type: int = MANHATTAN, _call: Callable = None, _sleep: float = 0):
+                 _type: int = MANHATTAN, _call: Callable = None, _sleep: float = 0, _debug: bool = False):
         """A*参数
 
         Args:
@@ -100,6 +100,8 @@ class AStar:
         self._goal = goal
         self._land = {}
         self._visit = {}
+        self._debug = _debug
+        self._next = False
         for pos in walls:
             if self._legitimate(pos):
                 self._land[pos] = False
@@ -109,6 +111,9 @@ class AStar:
 
     def stop(self):
         self._task.cancel()
+
+    def next(self):
+        self._next = True
 
     def _legitimate(self, pos: Tuple[int, int]) -> bool:
         if pos[0] >= self._w or pos[0] < 0:
@@ -168,15 +173,23 @@ class AStar:
                 return
             self._call_path(HAS_VISIT, head.pos)
             if head.pos != self._start:
-                await asyncio.sleep(self._sleep)
+                await self.wait()
             for _next, _one_cost in self._next_pos(head.pos):
                 self._visit[_next] = True
                 cost = head.step + _one_cost + self._get_cos(_next)
                 self._pq.put(Node(_next, cost, head.step + _one_cost, head))
                 self._call_path(WILL_VISIT, _next)
-                await asyncio.sleep(self._sleep)
+                await self.wait()
 
         self._call_path(RESULT, None)
+
+    async def wait(self):
+        if not self._debug:
+            await asyncio.sleep(self._sleep)
+            return
+        while not self._next:
+            await asyncio.sleep(0.01)
+        self._next = False
 
     def _call_path(self, key: int, value: Any):
         if not self._call:
